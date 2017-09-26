@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "alexa-sdk": "^1.0.14",
     "express": "^4.15.5"
   }
 }
