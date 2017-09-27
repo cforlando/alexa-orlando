@@ -13,8 +13,8 @@ var handlers = {
     'GetCityClerksPhoneNumber': function() {
         this.emit(':tellWithCard', "407.246.2251", "City Clerk Phone Number", "407-246-2251");
     },
-    'GetCityClerksPhoneNumber': function() {
-        this.emit(':tell', "Buddy Dyer");
+    'GetMayorNameIntent': function() {
+        this.emit(':tell', "Buddy Dyer has served as Mayor of the City of Orlando since 2003");
     },
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
