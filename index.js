@@ -11,7 +11,10 @@ var handlers = {
         this.emit(':tell', "City Council meetings are held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
     },
     'GetCityClerksPhoneNumber': function() {
-        this.emit(':tell', "407.246.2251");
+        this.emit(':tellWithCard', "407.246.2251", "City Clerk Phone Number", "407-246-2251");
+    },
+    'GetCityClerksPhoneNumber': function() {
+        this.emit(':tell', "Buddy Dyer");
     },
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
