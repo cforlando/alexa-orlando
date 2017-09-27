@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/akozlik/alexa-orlando/issues"
   },
-  "homepage": "https://github.com/akozlik/alexa-orlando#readme"
+  "homepage": "https://github.com/akozlik/alexa-orlando#readme",
+  "dependencies": {
+    "alexa-sdk": "^1.0.14"
+  }
 }
