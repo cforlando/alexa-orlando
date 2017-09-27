@@ -30,8 +30,5 @@ var handlers = {
 exports.handler = function (event, context, callback) {
     var alexa = Alexa.handler(event, context, callback);
     alexa.registerHandlers(handlers);
-    console.log("Request: " + event.request);
-    console.log("Locale " + event.request.locale);
-    print("Hi");
     alexa.execute();
 };
