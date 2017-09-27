@@ -8,7 +8,10 @@ var handlers = {
         this.emit(':tell', "The next City Council meeting will be held on Monday, October 9, 2017 at 2:00 P.M.");
     },
     'GetLocationOfCityCouncilMeetingIntent': function() {
-        this.emit(':tell', "City Council meetings are in held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
+        this.emit(':tell', "City Council meetings are held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
+    },
+    'GetCityClerksPhoneNumber': function() {
+        this.emit(':tell', "407.246.2251");
     },
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
