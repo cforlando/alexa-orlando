@@ -11,7 +11,7 @@ var handlers = {
         this.emit(':tell', "City Council meetings are held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
     },
     'GetCityClerksPhoneNumber': function() {
-        this.emit(':tellWithCard', "407.246.2251", "City Clerk Phone Number", "407-246-2251");
+        this.emit(':tellWithCard', "You can call the city clerk's office at 407.246.2251", "City Clerk Phone Number", "407-246-2251");
     },
     'GetMayorNameIntent': function() {
         this.emit(':tell', "Buddy Dyer has served as Mayor of the City of Orlando since 2003");
