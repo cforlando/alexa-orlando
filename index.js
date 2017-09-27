@@ -5,7 +5,7 @@ var handlers = {
         this.emit(':tell', "This is not implemented yet!");
     },
     'GetNextCityCouncilMeetingIntent': function() {
-
+        this.emit(':tell', "The next City Council meeting will be held on Monday, October 9, 2017 at 2:00 P.M.");
     },
     'GetLocationOfCityCouncilMeetingIntent': function() {
         this.emit(':tell', "City Council meetings are in held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
