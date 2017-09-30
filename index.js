@@ -1,5 +1,6 @@
 var Alexa = require('alexa-sdk');
-var FunFacts = require('./funFacts.json')
+var FunFacts = require('./funFacts.json');
+var PhoneNumbers = require('./phoneNumbers.json');
 
 var handlers = {
     'GetFunFactsIntent': function() {
@@ -50,21 +51,7 @@ exports.handler = function (event, context, callback) {
 };
 
 function getPhoneNumberForDepartment(department) {
-    var phoneNumbers = {
-        "business": "The phone number for business and financial services is 407.246.2341",
-        "parking": "The phone number for the parking division is 407.246.2155",
-        "waste": "The phone number for solid waste is 407.246.2314",
-        "communications": "The phone number for communications and neighborhood relations is 407.246.2169",
-        "clerk": "The phone number for the city clerk's office is 407.246.2251",
-        "parks": "The phone number for the parks division is 407.246.2283",
-        "mayor": "The phone number for the office of the mayor is 407.246.2221",
-        "fire": "The non-emergency number for the fire department is 321.246.3473. If this is an emergency please call 911",
-        "police": "The non-emergency number for OPD is 407.246.2470. If this is an emergency please call 911",
-        "attorney": "The phone number for the city attorney's office is 407.246.2295",
-    };
-
-    return phoneNumbers[department];
-
+    return PhoneNumbers.phone_numbers[department];
 }
 
 function getRandomOrlandoFunFact() {
