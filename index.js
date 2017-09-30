@@ -90,7 +90,7 @@ function getCrimeReport(callback) {
         xml2js.parseString(response.data, function(error, result) {
             if (error) {
                 console.log("xml2js Error: " + error);
-                callback("There is no crime at this time.");
+                callback("There was a problem parsing the data.");
             } else {
                 var crimeData = result.CALLS.CALL[0];
                 var crimeString = "There was a " + crimeData.DESC + " reported at " + crimeData.LOCATION;
@@ -100,10 +100,6 @@ function getCrimeReport(callback) {
     })
     .catch( function(error) {
         console.log("axios Error:" + error);
-        callback("We could not ");
+        callback("There was a problem getting the data.");
     })
 }
-// 
-// getCrimeReport( function(crime) {
-//   console.log(crime)
-// })
