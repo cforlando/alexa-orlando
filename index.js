@@ -83,7 +83,6 @@ function getWard(address, callback) {
     address = encodeURIComponent(address); 
 
     var apiURL = baseApiUrl + address;
-    console.log("Address: " + apiURL);
     Axios.get(apiURL)
         .then(function(response) {
             // check for error
@@ -91,7 +90,7 @@ function getWard(address, callback) {
             //check if data response came through 
             //loop through data to find the District Ward. 
             // the data json should look like this -> { locations: [{}], abc: '', xyz: '' }
-            // searching for 'Ward': 'some number'
+            // city_Ward ->>>> 'Ward': 'some number'
             for (var i=0; i<response.data.locations.length; i++) {
                 var location = response.data.locations[i]; 
                 city_Ward = location.Ward;
@@ -104,5 +103,39 @@ function getWard(address, callback) {
 }
 
 function getCommissioner(ward, callback) {
-    callback(commissioner);
+    var commissioner; 
+    var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/Public/InMyNeighbourhood/Councillors&Ward=';
+    //encode uri for ward
+    ward = encodeURIComponent(ward); 
+    //final api url 
+    var apiURL = baseApiUrl + ward; 
+    Axios.get(apiURL)
+        .then(function(response) {
+            // check for error
+            if (response.data !== 200) { response.status; return; }
+            
+            // extract { response.data.responseContent } -> long html string
+            // regex and find the text in between the 2nd instance of { <h3> _ </h3> } 
+            findCommissionerString(response.data.responseContent); // returns commissioner  
+            callback(commissioner); 
+        })
+}
+
+function findCommissionerString(dataString) {
+    var delimiter = 'h3', 
+    start = 2, 
+    //splits the first 2 <h3> instances
+    tokens = dataString.split(delimiter).slice(start), 
+    half_str = tokens.join(delimiter); 
+
+    var beg_h3 = half_str.indexOf('h3', 0); 
+    var end_h3 = half_str.indexOf('h3', (beg_h3 + 1)); 
+    var h3_str = half_str.slice(beg_h3 -1, end_h3 + 3); 
+
+    bracK_1 = h3_str.indexOf('>', 1); 
+    bracK_2 = h3_str.indexOf('<', bracK_1); 
+
+    var final_str = h3_str.slice(bracK_1 + 1, brack_2); 
+
+    return commissioner = final_str; 
 }
