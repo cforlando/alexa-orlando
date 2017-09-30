@@ -1,6 +1,11 @@
 var Alexa = require('alexa-sdk');
+var FunFacts = require('./funFacts.json')
 
 var handlers = {
+    'GetFunFactsIntent': function() {
+        var funFact = getRandomOrlandoFunFact();
+        this.emit(':tell', funFact);
+    },
     'GetDistrictIntent': function() {
         this.emit(':tell', "This is not implemented yet!");
     },
@@ -60,4 +65,9 @@ function getPhoneNumberForDepartment(department) {
 
     return phoneNumbers[department];
 
+}
+
+function getRandomOrlandoFunFact() {
+    var randomIndex = Math.floor(Math.random() * FunFacts.facts.length);
+    return FunFacts.facts[randomIndex]
 }
