@@ -15,8 +15,13 @@ var handlers = {
     'GetCityCommissioner': function() { 
         var address = '111 w jefferson st Orlando, Fl 32801';
         //get ward
-        // function GetCommissioner(ward) {}      
-        this.emit(':tell', getWard(address) ); 
+        // function GetCommissioner(ward) {}
+        var that = this;
+        getWard(address, function(ward) {
+            getCommissioner(ward, function(commissioner) {
+                that.emit(':tell', commissioner); 
+            });
+        });
     },
     'GetCityClerksPhoneNumber': function() {
         this.emit(':tellWithCard', "You can call the city clerk's office at 407.246.2251", "City Clerk Phone Number", "407-246-2251");
@@ -70,28 +75,34 @@ function getPhoneNumberForDepartment(department) {
 
 }
 
-function getWard(address) {   
+function getWard(address, callback) {   
     // global city_Ward variable to access data
     var city_Ward; 
     var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/public/spatial/findaddress&address=';  
     // encode uri for the baseApiUrl 
     address = encodeURIComponent(address); 
-    axios.get(baseApiUrl+address)
+
+    var apiURL = baseApiUrl + address;
+    console.log("Address: " + apiURL);
+    Axios.get(apiURL)
         .then(function(response) {
             // check for error
             if (response.status !== 200) { response.status; return; }
             //check if data response came through 
-            console.log(response);
             //loop through data to find the District Ward. 
             // the data json should look like this -> { locations: [{}], abc: '', xyz: '' }
             // searching for 'Ward': 'some number'
-            for (var i=0; i<response.locations.length; i++) {
-                var location = response.locations[i]; 
+            for (var i=0; i<response.data.locations.length; i++) {
+                var location = response.data.locations[i]; 
                 city_Ward = location.Ward;
-                return city_Ward; 
+                callback(city_Ward);
             }
         })
         .catch(function(err) {
-            console.log(err);
+            console.log("Error: " + err);
         })
+}
+
+function getCommissioner(ward, callback) {
+    callback(commissioner);
 }
