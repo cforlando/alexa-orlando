@@ -4,12 +4,9 @@ var xml2js = require('xml2js');
 var axios = require('axios');
 
 var handlers = {
-    'GetCrimeIntent': function() {
-        // var that = this
-        // var crimeReport = getCrimeReport();
-        // this.emit(':tell', crimeReport);
+    'GetCrimeReportIntent': function() {
         var that = this
-        crimeReport(that);
+        getCrimeReport(that);
     },
     'GetFunFactsIntent': function() {
         var funFact = getRandomOrlandoFunFact();
@@ -104,5 +101,3 @@ function getCrimeReport(that) {
         that.emit(':tell', "Could not find any current crime");
     })
 }
-
-getCrimeReport(this);
