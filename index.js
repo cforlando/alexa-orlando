@@ -1,7 +1,20 @@
 var Alexa = require('alexa-sdk');
 var CityCouncilDates = require('./citycouncildates.json');
+var FunFacts = require('./funFacts.json');
+var xml2js = require('xml2js');
+var axios = require('axios');
 
 var handlers = {
+    'GetCrimeReportIntent': function() {
+        var that = this;
+        getCrimeReport(function(crime) {
+          that.emit(':tell', crime)
+        });
+    },
+    'GetFunFactsIntent': function() {
+        var funFact = getRandomOrlandoFunFact();
+        this.emit(':tell', funFact);
+    },
     'GetDistrictIntent': function() {
         this.emit(':tell', "This is not implemented yet!");
     },
@@ -72,6 +85,7 @@ function getPhoneNumberForDepartment(department) {
 
 }
 
+
 function GetDayInSec() {
     //Takes the current date, removes the time, and then returns the seconds
 	var tDate = new Date()
@@ -96,3 +110,33 @@ function NextDate(aDates, CurrentDate) {
 	}
     return sNext;
 }
+
+function getRandomOrlandoFunFact() {
+    var randomIndex = Math.floor(Math.random() * FunFacts.facts.length);
+    return FunFacts.facts[randomIndex]
+}
+
+function getCrimeReport(callback) {
+   axios({
+        url: "http://www1.cityoforlando.net/opd/activecalls/activecad.xml",
+        method: "get",
+        responseType: "text"
+    })
+    .then( function(response, callback) {
+        xml2js.parseString(response.data, function(error, result) {
+            if (error) {
+                console.log("xml2js Error: " + error);
+                callback("There is no crime at this time.");
+            } else {
+                var crimeData = result.CALLS.CALL[0];
+                var crimeString = crimeData.DESC + " at " + crimeData.LOCATION;
+                callback("There was a " + crimeString);
+            }
+         })
+    })
+    .catch( function(error) {
+        console.log("axios Error:" + error);
+        callback("There is no crime at this time.");
+    })
+}
+

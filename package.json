@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/akozlik/alexa-orlando#readme",
   "dependencies": {
-    "alexa-sdk": "^1.0.14"
+    "alexa-sdk": "^1.0.14",
+    "axios": "^0.16.2",
+    "xml2js": "^0.4.19"
   }
 }
