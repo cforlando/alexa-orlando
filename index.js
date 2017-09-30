@@ -21,6 +21,11 @@ var handlers = {
         var responseString = getPhoneNumberForDepartment(departmentId);
         this.emit(':tell', responseString);
     },
+    'GetLocalEvents': function() {
+        var dateID = this.event.request.intent.slots.event_date.resolutions.resolutionsPerAuthority[0].values[0].value.id;
+        var responseString = get
+        this.emit(':tell', responseString);
+    },
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
         var reprompt = HELP_REPROMPT;
