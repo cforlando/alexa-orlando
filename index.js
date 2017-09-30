@@ -93,7 +93,10 @@ function getCrimeReport(callback) {
                 callback("There was a problem parsing the data.");
             } else {
                 var crimeData = result.CALLS.CALL[0];
-                var crimeString = "There was a " + crimeData.DESC + " reported at " + crimeData.LOCATION;
+                var date = new Date(crimeData.DATE);
+                var hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
+                var minute = date.getMinutes();
+                var crimeString = "There was a " + crimeData.DESC + " reported at " + crimeData.LOCATION + " at " + hour + ":" + minute;
                 callback(crimeString);
             }
          })
@@ -103,3 +106,7 @@ function getCrimeReport(callback) {
         callback("There was a problem getting the data.");
     })
 }
+
+getCrimeReport( function(crime) {
+  console.log(crime)
+});
