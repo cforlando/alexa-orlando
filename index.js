@@ -1,6 +1,6 @@
 var Alexa = require('alexa-sdk');
 //import axios for api calls
-import Axios from 'axios'; 
+var Axios = require('axios');  
 
 var handlers = {
     'GetDistrictIntent': function() {
@@ -77,25 +77,21 @@ function getWard(address) {
     // encode uri for the baseApiUrl 
     address = encodeURIComponent(address); 
     axios.get(baseApiUrl+address)
-        .then((response) => {
+        .then(function(response) {
             // check for error
             if (response.status !== 200) { response.status; return; }
-            // examine data
-            response.json()
-                .then((data) => {
-                    //check if data came through 
-                    console.log(data);
-                    //loop through data to find the District Ward. 
-                    // the data json should look like this -> { locations: [{}], abc: '', xyz: '' }
-                    // searching for 'Ward': 'some number'
-                    for (var i=0; i<data.locations.length; i++) {
-                        var location = data.locations[i]; 
-                        city_Ward = location.Ward;
-                        return city_Ward; 
-                    }
-                })
+            //check if data response came through 
+            console.log(response);
+            //loop through data to find the District Ward. 
+            // the data json should look like this -> { locations: [{}], abc: '', xyz: '' }
+            // searching for 'Ward': 'some number'
+            for (var i=0; i<response.locations.length; i++) {
+                var location = response.locations[i]; 
+                city_Ward = location.Ward;
+                return city_Ward; 
+            }
         })
-        .catch((err) => {
+        .catch(function(err) {
             console.log(err);
         })
 }
