@@ -94,9 +94,11 @@ function getCrimeReport(callback) {
             } else {
                 var crimeData = result.CALLS.CALL[0];
                 var date = new Date(crimeData.DATE);
+                var description = crimeData.DESC;
+                var location = crimeData.LOCATION;
                 var hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
                 var minute = date.getMinutes();
-                var crimeString = "There was a " + crimeData.DESC + " reported at " + crimeData.LOCATION + " at " + hour + ":" + minute;
+                var crimeString = "There was a " + description + " reported at " + location + " at " + hour + ":" + minute;
                 callback(crimeString);
             }
          })
@@ -106,7 +108,3 @@ function getCrimeReport(callback) {
         callback("There was a problem getting the data.");
     })
 }
-
-getCrimeReport( function(crime) {
-  console.log(crime)
-});
