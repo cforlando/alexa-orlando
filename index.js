@@ -74,25 +74,25 @@ function getPhoneNumberForDepartment(department) {
 
 function GetDayInSec() {
     //Takes the current date, removes the time, and then returns the seconds
-	var date = new Date()
-	var date =  (date.getMonth() +1)+ "/" + date.getDate() + "/" + date.getFullYear();
+	var tDate = new Date()
+	var tDate =  (tDate.getMonth() +1)+ "/" + tDate.getDate() + "/" + tDate.getFullYear();
 	
-	date = Date.parse(date);
-    return date;
+	sDateInSec = Date.parse(tDate);
+    return sDateInSec;
 }
 
 function NextDate(aDates, CurrentDate) {
     //step through dates until it finds one that hasn't occurred
     //aDates must be ordered or this fails
-    var length = aDates.length;
+    var nLength = aDates.length;
 	var i = 0;
-	while (i < length) { 
-    	curr = Date.parse(aDates[i]);
-    	if (curr > CurrentDate)  {
-    		next = aDates[i];
+	while (i < nLength) { 
+    	sCurr = Date.parse(aDates[i]);
+    	if (sCurr > CurrentDate)  {
+    		sNext = aDates[i];
     		break;
     		}
     	i++;
 	}
-    return next;
+    return sNext;
 }
