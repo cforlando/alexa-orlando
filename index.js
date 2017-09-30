@@ -176,7 +176,6 @@ function getEventParking(date, callback) {
         var hasEvent = false;
         for (i = 0; i<response.data.length; i++) {
             date = moment(response.data[i], "YYYY-MM-DD");
-            console.log(date);
             if (today.isSame(date)) {
                 hasEvent = true;
                 break;
