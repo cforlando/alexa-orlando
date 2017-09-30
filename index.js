@@ -41,6 +41,7 @@ var handlers = {
         var that = this;
         getWard(address, function(ward) {
             getCommissioner(ward, function(commissioner) {
+                console.log("Commissioner: " + commissioner);
                 that.emit(':tell', commissioner); 
             });
         });
@@ -214,20 +215,22 @@ function getWard(address, callback) {
 }
 
 function getCommissioner(ward, callback) {
+    console.log("Getting commissioner");
     var commissioner; 
     var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/Public/InMyNeighbourhood/Councillors&Ward=';
     //encode uri for ward
     ward = encodeURIComponent(ward); 
     //final api url 
     var apiURL = baseApiUrl + ward; 
+    console.log("API URL: " + apiURL);
     axios.get(apiURL)
         .then(function(response) {
             // check for error
-            if (response.data !== 200) { response.status; return; }
-            
+            // if (response.data !== 200) { console.log("Error Response"); response.status; return; }
             // extract { response.data.responseContent } -> long html string
             // regex and find the text in between the 2nd instance of { <h3> _ </h3> } 
-            findCommissionerString(response.data.responseContent); // returns commissioner  
+            console.log("Response Content: " + response.data.responseContent);
+            var commissioner = findCommissionerString(response.data.responseContent); // returns commissioner  
             callback(commissioner); 
         })
 }
@@ -243,10 +246,10 @@ function findCommissionerString(dataString) {
     var end_h3 = half_str.indexOf('h3', (beg_h3 + 1)); 
     var h3_str = half_str.slice(beg_h3 -1, end_h3 + 3); 
 
-    bracK_1 = h3_str.indexOf('>', 1); 
-    bracK_2 = h3_str.indexOf('<', bracK_1); 
+    brack_1 = h3_str.indexOf('>', 1); 
+    brack_2 = h3_str.indexOf('<', brack_1); 
 
-    var final_str = h3_str.slice(bracK_1 + 1, brack_2); 
+    var final_str = h3_str.slice(brack_1 + 1, brack_2); 
 
     return commissioner = final_str;
 }
