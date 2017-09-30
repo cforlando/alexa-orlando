@@ -221,7 +221,7 @@ function getCommissioner(ward, callback) {
     ward = encodeURIComponent(ward); 
     //final api url 
     var apiURL = baseApiUrl + ward; 
-    Axios.get(apiURL)
+    axios.get(apiURL)
         .then(function(response) {
             // check for error
             if (response.data !== 200) { response.status; return; }
