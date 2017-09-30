@@ -34,6 +34,17 @@ var handlers = {
     'GetLocationOfCityCouncilMeetingIntent': function() {
         this.emit(':tell', "City Council meetings are held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
     },
+    'GetCityCommissioner': function() { 
+        var address = '111 w jefferson st Orlando, Fl 32801';
+        //get ward
+        // function GetCommissioner(ward) {}
+        var that = this;
+        getWard(address, function(ward) {
+            getCommissioner(ward, function(commissioner) {
+                that.emit(':tell', commissioner); 
+            });
+        });
+    },
     'GetCityClerksPhoneNumber': function() {
         this.emit(':tellWithCard', "You can call the city clerk's office at 407.246.2251", "City Clerk Phone Number", "407-246-2251");
     },
@@ -97,7 +108,6 @@ function getPhoneNumberForDepartment(department) {
     return phoneNumbers[department];
 
 }
-
 
 function GetDayInSec() {
     //Takes the current date, removes the time, and then returns the seconds
@@ -175,4 +185,69 @@ function getEventParking(date, callback) {
 
         callback(hasEvent);
     })
+}
+
+function getWard(address, callback) {   
+    // global city_Ward variable to access data
+    var city_Ward; 
+    var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/public/spatial/findaddress&address=';  
+    // encode uri for the baseApiUrl 
+    address = encodeURIComponent(address); 
+
+    var apiURL = baseApiUrl + address;
+    axios.get(apiURL)
+        .then(function(response) {
+            // check for error
+            if (response.status !== 200) { response.status; return; }
+            //check if data response came through 
+            //loop through data to find the District Ward. 
+            // the data json should look like this -> { locations: [{}], abc: '', xyz: '' }
+            // city_Ward ->>>> 'Ward': 'some number'
+            for (var i=0; i<response.data.locations.length; i++) {
+                var location = response.data.locations[i]; 
+                city_Ward = location.Ward;
+                callback(city_Ward);
+            }
+        })
+        .catch(function(err) {
+            console.log("Error: " + err);
+        })
+}
+
+function getCommissioner(ward, callback) {
+    var commissioner; 
+    var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/Public/InMyNeighbourhood/Councillors&Ward=';
+    //encode uri for ward
+    ward = encodeURIComponent(ward); 
+    //final api url 
+    var apiURL = baseApiUrl + ward; 
+    Axios.get(apiURL)
+        .then(function(response) {
+            // check for error
+            if (response.data !== 200) { response.status; return; }
+            
+            // extract { response.data.responseContent } -> long html string
+            // regex and find the text in between the 2nd instance of { <h3> _ </h3> } 
+            findCommissionerString(response.data.responseContent); // returns commissioner  
+            callback(commissioner); 
+        })
+}
+
+function findCommissionerString(dataString) {
+    var delimiter = 'h3', 
+    start = 2, 
+    //splits the first 2 <h3> instances
+    tokens = dataString.split(delimiter).slice(start), 
+    half_str = tokens.join(delimiter); 
+
+    var beg_h3 = half_str.indexOf('h3', 0); 
+    var end_h3 = half_str.indexOf('h3', (beg_h3 + 1)); 
+    var h3_str = half_str.slice(beg_h3 -1, end_h3 + 3); 
+
+    bracK_1 = h3_str.indexOf('>', 1); 
+    bracK_2 = h3_str.indexOf('<', bracK_1); 
+
+    var final_str = h3_str.slice(bracK_1 + 1, brack_2); 
+
+    return commissioner = final_str;
 }
