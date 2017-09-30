@@ -1,4 +1,5 @@
 var Alexa = require('alexa-sdk');
+var CityCouncilDates = require('./citycouncildates.json');
 var FunFacts = require('./funFacts.json');
 var xml2js = require('xml2js');
 var axios = require('axios');
@@ -19,7 +20,16 @@ var handlers = {
         this.emit(':tell', "This is not implemented yet!");
     },
     'GetNextCityCouncilMeetingIntent': function() {
-        this.emit(':tell', "The next City Council meeting will be held on Monday, October 9, 2017 at 2:00 P.M.");
+        //aDates = array of dates (Must be sorted past to present)
+        //date   = Current date in seconds
+
+        var aDates = CityCouncilDates.date;
+        var sDateInSec = GetDayInSec();
+        var sNext = NextDate(aDates, sDateInSec);
+        var sResponse = "The next City Council meeting will be held on " + sNext + "at 2:00 P.M.";
+        //We are not completely certain it will always be at 2:00 pm the day of the meeting.
+        this.emit(':tell', sResponse);
+        
     },
     'GetLocationOfCityCouncilMeetingIntent': function() {
         this.emit(':tell', "City Council meetings are held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
@@ -88,6 +98,32 @@ function getPhoneNumberForDepartment(department) {
 
 }
 
+
+function GetDayInSec() {
+    //Takes the current date, removes the time, and then returns the seconds
+	var tDate = new Date()
+	var tDate =  (tDate.getMonth() +1)+ "/" + tDate.getDate() + "/" + tDate.getFullYear();
+	
+	sDateInSec = Date.parse(tDate);
+    return sDateInSec;
+}
+
+function NextDate(aDates, CurrentDate) {
+    //step through dates until it finds one that hasn't occurred
+    //aDates must be ordered or this fails
+    var nLength = aDates.length;
+	var i = 0;
+	while (i < nLength) { 
+    	sCurr = Date.parse(aDates[i]);
+    	if (sCurr > CurrentDate)  {
+    		sNext = aDates[i];
+    		break;
+    		}
+    	i++;
+	}
+    return sNext;
+}
+
 function getRandomOrlandoFunFact() {
     var randomIndex = Math.floor(Math.random() * FunFacts.facts.length);
     return FunFacts.facts[randomIndex]
@@ -140,7 +176,3 @@ function getEventParking(date, callback) {
         callback(hasEvent);
     })
 }
-
-getEventParking(function(hasEvent){
-    console.log(hasEvent);
-});
