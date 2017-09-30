@@ -22,7 +22,7 @@ var handlers = {
         this.emit(':tell', responseString);
     },
     'GetLocalEvents': function() {
-        var date = this.event.request.intent.slots.event_date.resolutions.value;
+        var date = this.event.request.intent.slots.event_date.value;
         var responseString = getLocalEventsForDate(date);
         this.emit(':tell', responseString);
     },
