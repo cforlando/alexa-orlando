@@ -7,7 +7,7 @@ var moment = require('moment');
 var handlers = {
     'GetCrimeReportIntent': function() {
         var that = this;
-        getCrimeReport(function(crime) {
+        getCrimeReport( function(crime) {
           that.emit(':tell', crime)
         });
     },
@@ -35,12 +35,15 @@ var handlers = {
         var responseString = getPhoneNumberForDepartment(departmentId);
         this.emit(':tell', responseString);
     },
-    'GetLocalEventsIntent' : function() {
-        getEventParking(function(hasEventParking) {
+    'GetEventParkingIntent' : function() {
+
+        that = this;
+        var date = this.event.request.intent.slots.date.value;
+        getEventParking(date, function(hasEventParking) {
             if (hasEventParking) {
-                this.emit(':tell', "Yes, there is event parking on that date");
+                that.emit(':tell', "Yes, there is event parking on that date");
             } else {
-                this.emit(':tell', "No, there is not event parking on that date");
+                that.emit(':tell', "No, there is not event parking on that date");
             }
         });
     },
@@ -96,25 +99,25 @@ function getCrimeReport(callback) {
         method: "get",
         responseType: "text"
     })
-    .then( function(response, callback) {
+    .then( function(response) {
         xml2js.parseString(response.data, function(error, result) {
             if (error) {
                 console.log("xml2js Error: " + error);
-                callback("There is no crime at this time.");
+                callback("There was a problem parsing the data.");
             } else {
                 var crimeData = result.CALLS.CALL[0];
-                var crimeString = crimeData.DESC + " at " + crimeData.LOCATION;
-                callback("There was a " + crimeString);
+                var crimeString = "There was a " + crimeData.DESC + " reported at " + crimeData.LOCATION;
+                callback(crimeString);
             }
          })
     })
     .catch( function(error) {
         console.log("axios Error:" + error);
-        callback("There is no crime at this time.");
+        callback("There was a problem getting the data.");
     })
 }
 
-function getEventParking(callback) {
+function getEventParking(date, callback) {
     axios({
         url: "https://event-parking.herokuapp.com/events",
         method: "get",
@@ -122,7 +125,7 @@ function getEventParking(callback) {
     })
     .then(function(response) {
 
-        var today = moment("10-5-2017", "MM-DD-YYYY");
+        var today = moment(date, "YYYY-MM-DD");
 
         var hasEvent = false;
         for (i = 0; i<response.data.length; i++) {
@@ -137,3 +140,7 @@ function getEventParking(callback) {
         callback(hasEvent);
     })
 }
+
+getEventParking(function(hasEvent){
+    console.log(hasEvent);
+});
