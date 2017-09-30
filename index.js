@@ -22,8 +22,8 @@ var handlers = {
         this.emit(':tell', responseString);
     },
     'GetLocalEvents': function() {
-        var dateID = this.event.request.intent.slots.event_date.resolutions.resolutionsPerAuthority[0].values[0].value.id;
-        var responseString = get
+        var date = this.event.request.intent.slots.event_date.resolutions.value;
+        var responseString = getLocalEventsForDate(date);
         this.emit(':tell', responseString);
     },
     'AMAZON.HelpIntent': function () {
@@ -65,4 +65,8 @@ function getPhoneNumberForDepartment(department) {
 
     return phoneNumbers[department];
 
+}
+
+function getLocalEventsForDate(date) {
+    return date;
 }
