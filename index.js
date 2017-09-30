@@ -1,4 +1,7 @@
 var Alexa = require('alexa-sdk');
+var xml2js = require('xml2js');
+var axios = require('axios');
+
 
 var handlers = {
     'GetDistrictIntent': function() {
@@ -64,9 +67,43 @@ function getPhoneNumberForDepartment(department) {
     };
 
     return phoneNumbers[department];
-
 }
 
 function getLocalEventsForDate(date) {
-    return date;
+    // Get event RSS feed
+    axios({
+      url: "http://alpha.orlando.gov/feed.rss?listID=712bbc21-f866-44ee-ab92-547c44464eb6",
+      method: "get",
+      responseType: "text"
+    })
+    // Read and parse feed
+    .then( function(response) {
+      // Clean up RSS feed
+      var cleanedResponse = response.data.replace(/\&/g, "and") // replace &
+      //cleanedResponse = cleanedResponse.replace(/\<br\>/g, "") //
+      cleanedResponse = "<list>" + cleanedResponse + "</list>"
+      //cleanedResponse = cleanedResponse.replace(/\<?\\[p|strong|br].*?\/\>/g, "")
+      //cleanedResponse = cleanedResponse.replace(/\<?\\p.*?\/\>/g, "")
+      cleanedResponse = cleanedResponse.replace(/\<\/?p\>/g, "")
+      console.log(cleanedResponse)
+      // Parse
+      xml2js.parseString(cleanedResponse, function(error, result) {
+        if (error) {
+          console.log("xml2js error:" + error)
+          //return "Could not find an event"
+        } else {
+          for (index in result.list.item) {
+            thisItem = result.list.item[index].nexteventdate
+            console.log(thisItem)
+            //if (date == thisItem.nextEventDate) {
+              //console.log(thisItem)
+            //}
+          }
+        }
+      });
+  })
+    // tester
+    //return date;
 }
+
+console.log("Running..." + getLocalEventsForDate("2017-09-17"));
