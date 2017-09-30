@@ -5,8 +5,10 @@ var axios = require('axios');
 
 var handlers = {
     'GetCrimeReportIntent': function() {
-        var that = this
-        getCrimeReport(that);
+        var that = this;
+        getCrimeReport(function(crime) {
+          that.emit(':tell', crime)
+        });
     },
     'GetFunFactsIntent': function() {
         var funFact = getRandomOrlandoFunFact();
@@ -78,26 +80,26 @@ function getRandomOrlandoFunFact() {
     return FunFacts.facts[randomIndex]
 }
 
-function getCrimeReport(that) {
+function getCrimeReport(callback) {
    axios({
         url: "http://www1.cityoforlando.net/opd/activecalls/activecad.xml",
         method: "get",
         responseType: "text"
     })
-    .then( function(response) {
+    .then( function(response, callback) {
         xml2js.parseString(response.data, function(error, result) {
             if (error) {
                 console.log("xml2js Error: " + error);
-                that.emit(':tell', "Could not find any current crime");
+                callback("There is no crime at this time.");
             } else {
                 var crimeData = result.CALLS.CALL[0];
                 var crimeString = crimeData.DESC + " at " + crimeData.LOCATION;
-                that.emit(':tell', crimeString);
+                callback("There was a " + crimeString);
             }
          })
     })
     .catch( function(error) {
         console.log("axios Error:" + error);
-        that.emit(':tell', "Could not find any current crime");
+        callback("There is no crime at this time.");
     })
 }
