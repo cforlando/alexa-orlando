@@ -1,4 +1,6 @@
 var Alexa = require('alexa-sdk');
+//import axios for api calls
+import Axios from 'axios'; 
 
 var handlers = {
     'GetDistrictIntent': function() {
@@ -71,10 +73,10 @@ function getPhoneNumberForDepartment(department) {
 function getWard(address) {   
     // global city_Ward variable to access data
     var city_Ward; 
-    var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/public/spatial/findaddress&address=';    
+    var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/public/spatial/findaddress&address=';  
     // encode uri for the baseApiUrl 
     address = encodeURIComponent(address); 
-    fetch(baseApiUrl+address)
+    axios.get(baseApiUrl+address)
         .then((response) => {
             // check for error
             if (response.status !== 200) { response.status; return; }
