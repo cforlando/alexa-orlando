@@ -6,7 +6,7 @@ var axios = require('axios');
 var handlers = {
     'GetCrimeReportIntent': function() {
         var that = this;
-        getCrimeReport(function(crime) {
+        getCrimeReport( function(crime) {
           that.emit(':tell', crime)
         });
     },
@@ -86,20 +86,24 @@ function getCrimeReport(callback) {
         method: "get",
         responseType: "text"
     })
-    .then( function(response, callback) {
+    .then( function(response) {
         xml2js.parseString(response.data, function(error, result) {
             if (error) {
                 console.log("xml2js Error: " + error);
                 callback("There is no crime at this time.");
             } else {
                 var crimeData = result.CALLS.CALL[0];
-                var crimeString = crimeData.DESC + " at " + crimeData.LOCATION;
-                callback("There was a " + crimeString);
+                var crimeString = "There was a " + crimeData.DESC + " reported at " + crimeData.LOCATION;
+                callback(crimeString);
             }
          })
     })
     .catch( function(error) {
         console.log("axios Error:" + error);
-        callback("There is no crime at this time.");
+        callback("We could not ");
     })
 }
+// 
+// getCrimeReport( function(crime) {
+//   console.log(crime)
+// })
