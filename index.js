@@ -11,7 +11,10 @@ var handlers = {
         this.emit(':tell', "City Council meetings are held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
     },
     'GetCityCommissioner': function() { 
-        this.emit(':tell', "Regina Hill has served as City Commissioner for the City of Orlando and District 5 since 2013"); 
+        var address = '111 w jefferson st Orlando, Fl 32801';
+        //get ward
+        // function GetCommissioner(ward) {}      
+        this.emit(':tell', getWard(address) ); 
     },
     'GetCityClerksPhoneNumber': function() {
         this.emit(':tellWithCard', "You can call the city clerk's office at 407.246.2251", "City Clerk Phone Number", "407-246-2251");
@@ -63,4 +66,34 @@ function getPhoneNumberForDepartment(department) {
 
     return phoneNumbers[department];
 
+}
+
+function getWard(address) {   
+    // global city_Ward variable to access data
+    var city_Ward; 
+    var baseApiUrl = 'https://alpha.orlando.gov/OCServiceHandler.axd?url=ocsvc/public/spatial/findaddress&address=';    
+    // encode uri for the baseApiUrl 
+    address = encodeURIComponent(address); 
+    fetch(baseApiUrl+address)
+        .then((response) => {
+            // check for error
+            if (response.status !== 200) { response.status; return; }
+            // examine data
+            response.json()
+                .then((data) => {
+                    //check if data came through 
+                    console.log(data);
+                    //loop through data to find the District Ward. 
+                    // the data json should look like this -> { locations: [{}], abc: '', xyz: '' }
+                    // searching for 'Ward': 'some number'
+                    for (var i=0; i<data.locations.length; i++) {
+                        var location = data.locations[i]; 
+                        city_Ward = location.Ward;
+                        return city_Ward; 
+                    }
+                })
+        })
+        .catch((err) => {
+            console.log(err);
+        })
 }
