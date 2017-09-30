@@ -2,6 +2,7 @@ var Alexa = require('alexa-sdk');
 var FunFacts = require('./funFacts.json');
 var xml2js = require('xml2js');
 var axios = require('axios');
+var moment = require('moment');
 
 var handlers = {
     'GetCrimeReportIntent': function() {
@@ -33,6 +34,15 @@ var handlers = {
         var departmentId = this.event.request.intent.slots.department.resolutions.resolutionsPerAuthority[0].values[0].value.id;
         var responseString = getPhoneNumberForDepartment(departmentId);
         this.emit(':tell', responseString);
+    },
+    'GetLocalEventsIntent' : function() {
+        getEventParking(function(hasEventParking) {
+            if (hasEventParking) {
+                this.emit(':tell', "Yes, there is event parking on that date");
+            } else {
+                this.emit(':tell', "No, there is not event parking on that date");
+            }
+        });
     },
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
@@ -101,5 +111,29 @@ function getCrimeReport(callback) {
     .catch( function(error) {
         console.log("axios Error:" + error);
         callback("There is no crime at this time.");
+    })
+}
+
+function getEventParking(callback) {
+    axios({
+        url: "https://event-parking.herokuapp.com/events",
+        method: "get",
+        responseType: "text"
+    })
+    .then(function(response) {
+
+        var today = moment("10-5-2017", "MM-DD-YYYY");
+
+        var hasEvent = false;
+        for (i = 0; i<response.data.length; i++) {
+            date = moment(response.data[i], "YYYY-MM-DD");
+            console.log(date);
+            if (today.isSame(date)) {
+                hasEvent = true;
+                break;
+            }
+        }
+
+        callback(hasEvent);
     })
 }
