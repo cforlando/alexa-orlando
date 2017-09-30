@@ -3,11 +3,12 @@ var CityCouncilDates = require('./citycouncildates.json');
 var FunFacts = require('./funFacts.json');
 var xml2js = require('xml2js');
 var axios = require('axios');
+var moment = require('moment');
 
 var handlers = {
     'GetCrimeReportIntent': function() {
         var that = this;
-        getCrimeReport(function(crime) {
+        getCrimeReport( function(crime) {
           that.emit(':tell', crime)
         });
     },
@@ -43,6 +44,18 @@ var handlers = {
         var departmentId = this.event.request.intent.slots.department.resolutions.resolutionsPerAuthority[0].values[0].value.id;
         var responseString = getPhoneNumberForDepartment(departmentId);
         this.emit(':tell', responseString);
+    },
+    'GetEventParkingIntent' : function() {
+
+        that = this;
+        var date = this.event.request.intent.slots.date.value;
+        getEventParking(date, function(hasEventParking) {
+            if (hasEventParking) {
+                that.emit(':tell', "Yes, there is event parking on that date");
+            } else {
+                that.emit(':tell', "No, there is not event parking on that date");
+            }
+        });
     },
     'AMAZON.HelpIntent': function () {
         var speechOutput = HELP_MESSAGE;
@@ -122,21 +135,44 @@ function getCrimeReport(callback) {
         method: "get",
         responseType: "text"
     })
-    .then( function(response, callback) {
+    .then( function(response) {
         xml2js.parseString(response.data, function(error, result) {
             if (error) {
                 console.log("xml2js Error: " + error);
-                callback("There is no crime at this time.");
+                callback("There was a problem parsing the data.");
             } else {
                 var crimeData = result.CALLS.CALL[0];
-                var crimeString = crimeData.DESC + " at " + crimeData.LOCATION;
-                callback("There was a " + crimeString);
+                var crimeString = "There was a " + crimeData.DESC + " reported at " + crimeData.LOCATION;
+                callback(crimeString);
             }
          })
     })
     .catch( function(error) {
         console.log("axios Error:" + error);
-        callback("There is no crime at this time.");
+        callback("There was a problem getting the data.");
     })
 }
 
+function getEventParking(date, callback) {
+    axios({
+        url: "https://event-parking.herokuapp.com/events",
+        method: "get",
+        responseType: "text"
+    })
+    .then(function(response) {
+
+        var today = moment(date, "YYYY-MM-DD");
+
+        var hasEvent = false;
+        for (i = 0; i<response.data.length; i++) {
+            date = moment(response.data[i], "YYYY-MM-DD");
+            console.log(date);
+            if (today.isSame(date)) {
+                hasEvent = true;
+                break;
+            }
+        }
+
+        callback(hasEvent);
+    })
+}

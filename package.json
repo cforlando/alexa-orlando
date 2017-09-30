@@ -19,6 +19,7 @@
   "dependencies": {
     "alexa-sdk": "^1.0.14",
     "axios": "^0.16.2",
+    "moment": "^2.18.1",
     "xml2js": "^0.4.19"
   }
 }
