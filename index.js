@@ -1,7 +1,16 @@
 var Alexa = require('alexa-sdk');
-var FunFacts = require('./funFacts.json')
+var FunFacts = require('./funFacts.json');
+var xml2js = require('xml2js');
+var axios = require('axios');
 
 var handlers = {
+    'GetCrimeIntent': function() {
+        // var that = this
+        // var crimeReport = getCrimeReport();
+        // this.emit(':tell', crimeReport);
+        var that = this
+        crimeReport(that);
+    },
     'GetFunFactsIntent': function() {
         var funFact = getRandomOrlandoFunFact();
         this.emit(':tell', funFact);
@@ -71,3 +80,29 @@ function getRandomOrlandoFunFact() {
     var randomIndex = Math.floor(Math.random() * FunFacts.facts.length);
     return FunFacts.facts[randomIndex]
 }
+
+function getCrimeReport(that) {
+   axios({
+        url: "http://www1.cityoforlando.net/opd/activecalls/activecad.xml",
+        method: "get",
+        responseType: "text"
+    })
+    .then( function(response) {
+        xml2js.parseString(response.data, function(error, result) {
+            if (error) {
+                console.log("xml2js Error: " + error);
+                that.emit(':tell', "Could not find any current crime");
+            } else {
+                var crimeData = result.CALLS.CALL[0];
+                var crimeString = crimeData.DESC + " at " + crimeData.LOCATION;
+                that.emit(':tell', crimeString);
+            }
+         })
+    })
+    .catch( function(error) {
+        console.log("axios Error:" + error);
+        that.emit(':tell', "Could not find any current crime");
+    })
+}
+
+getCrimeReport(this);
