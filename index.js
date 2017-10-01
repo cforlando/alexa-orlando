@@ -80,12 +80,7 @@ function getLocalEventsForDate(date) {
     .then( function(response) {
       // Clean up RSS feed
       var cleanedResponse = response.data.replace(/\&/g, "and") // replace &
-      //cleanedResponse = cleanedResponse.replace(/\<br\>/g, "") //
-      cleanedResponse = "<list>" + cleanedResponse + "</list>"
-      //cleanedResponse = cleanedResponse.replace(/\<?\\[p|strong|br].*?\/\>/g, "")
-      //cleanedResponse = cleanedResponse.replace(/\<?\\p.*?\/\>/g, "")
-      cleanedResponse = cleanedResponse.replace(/\<\/?p\>/g, "")
-      cleanedResponse = cleanedResponse.replace(/\<\/?(p|strong|br|a|h[0-9]|ul|li|image|img)(\s*(class|id|href|src|alt|width|height)\s*\=\s*\"[a-zA-Z\-\s\./\:\d]*\")*\s*\/?\>/g, "")
+      cleanedResponse = cleanedResponse.replace(/\<\/?(p|strong|br|a|h[0-9]|ul|li|image|img|g|div|span|ol)(\s*.*\s*\=\s*\".*\")*\s*\/?\>/g, "")
       console.log(cleanedResponse)
       // Parse
       xml2js.parseString(cleanedResponse, function(error, result) {
