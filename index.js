@@ -29,24 +29,36 @@ var handlers = {
         var sResponse = "The next City Council meeting will be held on " + sNext + "at 2:00 P.M.";
         //We are not completely certain it will always be at 2:00 pm the day of the meeting.
         this.emit(':tell', sResponse);
-        
     },
     'GetLocationOfCityCouncilMeetingIntent': function() {
         this.emit(':tell', "City Council meetings are held in Council Chamber, 2nd Floor, City Hall, 400 S. Orange Avenue.  For additional information, please contact the City Clerk’s Office, 407.246.2251.");
     },
     'GetCityCommissioner': function() {
 
-        var address = this.event.request.intent.slots.address.value;
+        var intentObj = this.event.request.intent;
+        var address = intentObj.slots.address.value;
+        console.log("Address: " + address);
+        console.log("Dialog state: " + this.event.request.dialogState);
 
-        //get ward
-        // function GetCommissioner(ward) {}
-        var that = this;
-        getWard(address, function(ward) {
-            getCommissioner(ward, function(commissioner) {
-                console.log("Commissioner: " + commissioner);
-                that.emit(':tell', commissioner);
+        if (!intentObj.slots.address.value) {
+            console.log("Addres sdoesn't exist");
+            var slotToElicit = 'Address';
+            var speechOutput = 'What is your address?';
+            var repromptSpeech = speechOutput;
+            // this.emit(':elicitSlot', slotToElicit, speechOutput, repromptSpeech);
+            this.emit(':delegate', this.event.request.intent);
+            console.log("Elicited response");
+        } else {
+            //get ward
+            // function GetCommissioner(ward) {}
+            var that = this;
+            getWard(address, function(ward) {
+                getCommissioner(ward, function(commissioner) {
+                    console.log("Commissioner: " + commissioner);
+                    that.emit(':tell', commissioner);
+                });
             });
-        });
+        }
     },
     'GetCityClerksPhoneNumber': function() {
         this.emit(':tellWithCard', "You can call the city clerk's office at 407.246.2251", "City Clerk Phone Number", "407-246-2251");
